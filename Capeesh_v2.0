@@ -1,0 +1,121 @@
+def generate_mafioso_identity(full_name):
+    """
+    Generates a deterministic Mafia identity with expanded naming depth.
+    """
+    name_clean = full_name.strip().title()
+    if " " in name_clean:
+        first, last = name_clean.split(" ", 1)
+    else:
+        first, last = name_clean, ""
+
+    # 1. Calculate "Street Cred" (The Seed)
+    street_cred = sum(ord(char) for char in name_clean)
+    
+    # 2. The Expanded Italianizer (3 Options per Letter)
+    # This allows for much more variety while staying accurate to the letter.
+    mob_first_names = {
+        'A': ['Anthony', 'Alessandro', 'Angelo'],
+        'B': ['Benny', 'Bruno', 'Bernardo'],
+        'C': ['Carlo', 'Carmine', 'Cesare'],
+        'D': ['Dino', 'Dante', 'Domenico'],
+        'E': ['Enzo', 'Emilio', 'Ettore'],
+        'F': ['Frankie', 'Fabio', 'Federico'],
+        'G': ['Giovanni', 'Gino', 'Giuseppe'],
+        'H': ['Harry', 'Hector', 'Hugo'],
+        'I': ['Ignazio', 'Italo', 'Ivan'],
+        'J': ['Johnny', 'Jimmy', 'Joey'],
+        'K': ['Knuckles', 'Kevin', 'Karlo'], # K is rare in Italian, we improvise
+        'L': ['Luigi', 'Lorenzo', 'Luca'],
+        'M': ['Mickey', 'Marco', 'Maximino'],
+        'N': ['Nicky', 'Nino', 'Nunzio'],
+        'O': ['Ollie', 'Orso', 'Orlando'],
+        'P': ['Paulie', 'Pietro', 'Pasquale'],
+        'Q': ['Quentin', 'Quinto', 'Quirino'],
+        'R': ['Rocco', 'Riccardo', 'Roberto'],
+        'S': ['Sal', 'Sonny', 'Silvio'],
+        'T': ['Tony', 'Tommy', 'Tito'],
+        'U': ['Umberto', 'Ugo', 'Ubaldo'],
+        'V': ['Vinnie', 'Vito', 'Valentino'],
+        'W': ['Walnuts', 'Walter', 'Willy'],
+        'X': ['Xavier', 'Xander', 'Xeno'],
+        'Y': ['Yancy', 'Yuri', 'Yago'],
+        'Z': ['Zito', 'Zack', 'Zandro']
+    }
+    
+    # LOGIC: get the list for the first letter. Default to V-names if unknown.
+    first_letter = first[0] if first else 'V'
+    name_options = mob_first_names.get(first_letter, ['Vinnie', 'Vito', 'Valentino'])
+    
+    # MATH: (Score + Name Length) % 3 selects index 0, 1, or 2
+    # We add len(first) to "salt" the number so it differs from the nickname math
+    selection_index = (street_cred + len(first)) % len(name_options)
+    new_first = name_options[selection_index]
+
+    # 3. The Nickname (The "Vibe")
+    nicknames = [
+        "The Butcher", "Three Fingers", "The Accountant", "Concrete Shoes", 
+        "The Fixer", "Big Tuna", "No-Neck", "The Canary", "Spicy Meatball", 
+        "The Clamps", "Snake Eyes", "The Hammer", "Baby Face", "The Landlord",
+        "Cement Mixer", "Tight Lips", "The Barber", "Knuckle Sandwich", 
+        "Ice Pick", "The Walrus", "Sunday Gravy", "Loose Cannon", "The Ear",
+        "The Shark", "Iron Hands", "The Ghost"
+    ]
+    nickname = nicknames[street_cred % len(nicknames)]
+
+    # 4. The Rank (Based on name length)
+    if len(name_clean) > 15:
+        rank = "Consigliere"
+    elif len(name_clean) < 10:
+        rank = "Mademan"
+    elif street_cred % 2 == 0:
+        rank = "Don"
+    else:
+        rank = "Capo"
+
+    # 5. The Last Name Twist
+    if not last:
+        last = "Jersey"
+    elif last[-1].lower() in "bdfgklmnpqrstvz":
+        last = last + "o"
+
+    # 6. Signature Move
+    moves = [
+        "Making an offer they can't refuse", "Sleeping with the fishes", 
+        "Forgettin' the cannoli", "Talking with their hands",
+        "Wearing a wire (allegedly)", "Cooking pasta at 3 AM",
+        "Collecting 'insurance' money", "Sitting in the back of the restaurant"
+    ]
+    move = moves[street_cred % len(moves)]
+
+    # 7. Final Output
+    return (
+        f"\n--- THE FAMILY FILES ---\n"
+        f"Civilian Name:  {full_name}\n"
+        f"Mob Name:       {rank} {new_first} '{nickname}' {last}\n"
+        f"Signature Move: {move}\n"
+    )
+
+def main():
+    print("---------------------------------------")
+    print("   MAFIA VIBE GENERATOR MK II")
+    print("   (Enhanced Variability Mode)")
+    print("   Type 'exit' to leave the organization.")
+    print("---------------------------------------")
+
+    while True:
+        try:
+            user_input = input("\nEnter Name > ")
+        except EOFError:
+            break
+            
+        if user_input.lower() in ['exit', 'quit', 'q']:
+            print("\nYou never saw me. Goodbye.")
+            break
+        
+        if user_input.strip():
+            print(generate_mafioso_identity(user_input))
+        else:
+            print("Speak up! I didn't hear a name.")
+
+if __name__ == "__main__":
+    main()
